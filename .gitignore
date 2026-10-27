@@ -1,0 +1,6 @@
+/compiler
+/stage1exe
+/code
+*.o
+*.asm
+.vscode/

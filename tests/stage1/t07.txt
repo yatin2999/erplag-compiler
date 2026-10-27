@@ -1,0 +1,54 @@
+** This testcase demonstrates the syntactic correctness of module declarations, modules defined before and after the driver, dynamic array declarations, and module calls with array, array element and boolean literal parameters.
+The program is syntactically correct. The semantic errors annotated below are reported by semantic analysis. **
+declare module m1;
+declare module m2;
+<<<driver program>>>
+start
+      get_value(v);                                         **ERROR: variable v is not declared**
+      declare x:integer;
+      declare b:array[1..5] of integer;
+      declare y:real;
+      declare a:array[x..10] of real;
+      [x,y]:=use module m2 with parameters a, b[1];         **ERROR: the integer b[1] does not match the boolean input parameter c**
+end
+
+<<module mod1>>
+takes input [a: integer, b: real];
+returns [x: integer, abc: real];
+start
+      declare c: real;
+      c:=10.4;
+      x:=a+b-10;                                             **ERROR: type mismatch: a is integer and b is real**
+      abc:=b/5+c;
+end
+
+<<module m1>>                                                **ERROR: the declaration of m1 is redundant, as no call before this definition needs it**
+takes input[a:array[1..10] of real,b:boolean];
+returns [x:integer,y:real];
+start
+      declare m:array[1..10] of real;
+      [x,y]:=use module m2 with parameters m,true;           **ERROR: m1 and m2 call each other**
+end
+
+<<module m2>>
+takes input[a:array[1..10] of real,c:boolean];
+returns [x:integer,y:real];
+start
+      declare x:integer;                                      **ERROR: the output parameter x cannot be redeclared**
+      declare n:array[1..5] of integer;
+      declare y:real;                                         **ERROR: the output parameter y cannot be redeclared**
+      declare m:array[x..10] of real;
+      [x,y]:=use module m1 with parameters m,false;          **ERROR: m2 and m1 call each other**
+end
+
+** print the following message on the console
+      "Input source code is syntactically correct."
+**
+
+** Also print the parse tree in the format given in function description of printParseTree().[refer interface details]**
+
+** The inorder traversal for an n-ary tree can be seen as follows
+
+Leftmost child --> parent node--> remaining siblings (excluding the leftmost)**
+
+** The above tree construction needs to be verified with manually created tree on paper for the above input using the given grammar. You can try using a A3 sized paper and draw the parse tree. work out the inorder traversal and verify your parser output **

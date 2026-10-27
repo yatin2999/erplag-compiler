@@ -1,0 +1,68 @@
+<program> -> <moduleDeclarations> <otherModules> <driverModule> <otherModules>
+<moduleDeclarations> -> <moduleDeclaration> <moduleDeclarations> | EPSILON
+<moduleDeclaration> -> DECLARE MODULE ID SEMICOL
+<otherModules> -> <module> <otherModules> | EPSILON
+<driverModule> -> DRIVERDEF DRIVER PROGRAM DRIVERENDDEF <moduleDef>
+<module> -> DEF MODULE ID ENDDEF TAKES INPUT SQBO <inputPlist> SQBC SEMICOL <ret> <moduleDef>
+<ret> -> RETURNS SQBO <outputPlist> SQBC SEMICOL | EPSILON
+<inputPlist> -> ID COLON <dataType> <inputPlistTail>
+<inputPlistTail> -> COMMA ID COLON <dataType> <inputPlistTail> | EPSILON
+<outputPlist> -> ID COLON <type> <outputPlistTail>
+<outputPlistTail> -> COMMA ID COLON <type> <outputPlistTail> | EPSILON
+<dataType> -> INTEGER | REAL | BOOLEAN | ARRAY SQBO <rangeArrays> SQBC OF <type>
+<rangeArrays> -> <indexArr> RANGEOP <indexArr>
+<type> -> INTEGER | REAL | BOOLEAN
+<indexArr> -> <sign> <newIndex>
+<newIndex> -> NUM | ID
+<sign> -> PLUS | MINUS | EPSILON
+<moduleDef> -> START <statements> END
+<statements> -> <statement> <statements> | EPSILON
+<statement> -> <ioStmt> | <simpleStmt> | <declareStmt> | <conditionalStmt> | <iterativeStmt>
+<ioStmt> -> GET_VALUE BO ID BC SEMICOL | PRINT BO <varPrint> BC SEMICOL
+<varPrint> -> ID <printIndex> | NUM | RNUM | <boolConst>
+<printIndex> -> SQBO <indexArr> SQBC | EPSILON
+<boolConst> -> TRUE | FALSE
+<simpleStmt> -> <assignmentStmt> | <moduleReuseStmt>
+<assignmentStmt> -> ID <whichStmt>
+<whichStmt> -> <lvalueIDStmt> | <lvalueARRStmt>
+<lvalueIDStmt> -> ASSIGNOP <expression> SEMICOL
+<lvalueARRStmt> -> SQBO <indexExpr> SQBC ASSIGNOP <expression> SEMICOL
+<moduleReuseStmt> -> <optional> USE MODULE ID WITH PARAMETERS <actualParaList> SEMICOL
+<optional> -> SQBO <idList> SQBC ASSIGNOP | EPSILON
+<idList> -> ID <idListTail>
+<idListTail> -> COMMA ID <idListTail> | EPSILON
+<actualParaList> -> <actualPara> <actualParaTail>
+<actualParaTail> -> COMMA <actualPara> <actualParaTail> | EPSILON
+<actualPara> -> <boolConst> | <sign> <paraValue>
+<paraValue> -> NUM | RNUM | ID <arrayIndex>
+<expression> -> <anyTerm> <logicalTail>
+<logicalTail> -> <logicalOp> <anyTerm> <logicalTail> | EPSILON
+<anyTerm> -> <arithmeticExpr> <relationalTail>
+<relationalTail> -> <relationalOp> <arithmeticExpr> | EPSILON
+<arithmeticExpr> -> <term> <addTail>
+<addTail> -> <addOp> <term> <addTail> | EPSILON
+<term> -> <factor> <mulTail>
+<mulTail> -> <mulOp> <factor> <mulTail> | EPSILON
+<factor> -> BO <expression> BC | NUM | RNUM | <boolConst> | ID <arrayIndex> | <unaryOp> <unaryOperand>
+<unaryOperand> -> BO <expression> BC | NUM | RNUM | ID <arrayIndex>
+<arrayIndex> -> SQBO <indexExpr> SQBC | EPSILON
+<indexExpr> -> <indexTerm> <indexAddTail>
+<indexAddTail> -> <addOp> <indexTerm> <indexAddTail> | EPSILON
+<indexTerm> -> <indexFactor> <indexMulTail>
+<indexMulTail> -> <mulOp> <indexFactor> <indexMulTail> | EPSILON
+<indexFactor> -> ID | NUM | BO <indexExpr> BC | <unaryOp> <indexUnaryOperand>
+<indexUnaryOperand> -> ID | NUM | BO <indexExpr> BC
+<unaryOp> -> PLUS | MINUS
+<addOp> -> PLUS | MINUS
+<mulOp> -> MUL | DIV
+<logicalOp> -> AND | OR
+<relationalOp> -> LT | LE | GT | GE | EQ | NE
+<declareStmt> -> DECLARE <idList> COLON <dataType> SEMICOL
+<conditionalStmt> -> SWITCH BO ID BC START <caseStmts> <default> END
+<caseStmts> -> CASE <value> COLON <statements> BREAK SEMICOL <moreCases>
+<moreCases> -> CASE <value> COLON <statements> BREAK SEMICOL <moreCases> | EPSILON
+<value> -> NUM | TRUE | FALSE
+<default> -> DEFAULT COLON <statements> BREAK SEMICOL | EPSILON
+<iterativeStmt> -> FOR BO ID IN <rangeForLoop> BC START <statements> END | WHILE BO <expression> BC START <statements> END
+<rangeForLoop> -> <indexForLoop> RANGEOP <indexForLoop>
+<indexForLoop> -> <sign> NUM
